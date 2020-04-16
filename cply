@@ -1,0 +1,111 @@
+  #!/usr/bin/env php
+
+<?php
+
+require_once('vendor/autoload.php');
+
+use dollaapp\Clipboard;
+
+
+/** get these from https://genius.com/api-clients **/
+
+$client_id = 'client id'
+$client_secret = 'client secret',
+$access_token = 'access token'
+
+$climate = new League\CLImate\CLImate;
+
+$climate->arguments->add([
+    'song' => [
+        'prefix'       => 's',
+        'longPrefix'   => 'song',
+        'description'  => 'Song title preferably with the artist\'s name',
+    ],
+    'help' => [
+    	'prefix'      => 'h',
+        'longPrefix'  => 'help',
+        'description' => 'Prints a usage statement',
+        'noValue'     => true,
+    ]
+]);
+
+$climate->description('CPLY: Get lyrics copied to your clipboard. (https://github.com/asvvvad/cply)');
+
+if ($climate->arguments->defined('help')) {
+	$climate->usage();
+	exit;
+}
+if (!$climate->arguments->defined('song')) {
+	$input = $climate->input('Song/artist name: ');
+	$song = trim($input->prompt());
+} elseif (trim($climate->arguments->get('song')) == '') {
+	$climate->error("Specify a song name using the argument -s");
+	exit(1);
+} else {
+	$song = trim($climate->arguments->get('song'));
+}
+
+$authentication = new \Genius\Authentication\OAuth2(
+  $client_id,
+  $client_secret,
+  'https://github.com/asvvvad/cply',
+  new \Genius\Authentication\Scope([
+      \Genius\Authentication\Scope::SCOPE_ME,
+      \Genius\Authentication\Scope::SCOPE_CREATE_ANNOTATION,
+      \Genius\Authentication\Scope::SCOPE_MANAGE_ANNOTATION
+  ]),
+  null
+);
+
+$authentication->setAccessToken($access_token);
+
+$genius = new \Genius\Genius($authentication);
+
+$hits = $genius->getSearchResource()->get($song)->response->hits;
+
+if (empty($hits)) {
+	$climate->error("No results found for the search string");
+	exit(1);
+}
+
+$search = [];
+
+foreach ($hits as $hit) {
+	// substr because some titles are too long and that can cause errors in song selection
+	$search[substr($hit->result->full_title, 0, 40)] = $hit->result->path;
+}
+
+$input = $climate->radio('Select a song:', array_keys($search));
+$input = $input->prompt();
+$path = $search[$input];
+
+
+$completeurl = "https://genius.com$path";
+$doc = new DOMDocument;
+libxml_use_internal_errors(true);
+$doc->loadHTMLFile($completeurl);
+$xpath = new DOMXPath($doc);
+$query = "//div[@class='lyrics']";
+$entries = $xpath->query($query);
+$var = $entries->item(0)->textContent;
+$lyrics = trim($var);
+
+
+$c = new Clipboard();
+
+if ($c->isUnsupported() === false) {
+	$c->writeAll($lyrics);
+	if ($c->readAll() != $lyrics) {
+		$climate->info("Lyrics for $input were copied to the clipboard.");
+		exit;
+	}
+	else {
+		$climate->error("Lyrics weren't copied to clipboard; copy them from here:\n");
+		$climate->info("$lyrics\n");
+		exit(1);
+	}
+} else {
+	$climate->error("Unsupported. Lyrics weren't copied to clipboard; copy them from here:\n");
+	$climate->info("$lyrics\n");
+	exit(1);
+}
