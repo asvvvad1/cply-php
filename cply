@@ -10,7 +10,7 @@ use dollaapp\Clipboard;
 /** get these from https://genius.com/api-clients **/
 
 $client_id = 'client id';
-$client_secret = 'client secret',
+$client_secret = 'client secret';
 $access_token = 'access token';
 
 $climate = new League\CLImate\CLImate;
