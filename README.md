@@ -28,7 +28,8 @@ To install it to the system it requires root you can use:
 ```bash
 cd ..
 sudo mv cply-php /usr/local/
-sudo ln -sf /usr/local/cply/cply /usr/local/bin
+sudo ln -sf /usr/local/cply-php/cply /usr/local/bin
+sudo chmod +x /usr/local/bin/cply
 ```
 
 ## Usage:
