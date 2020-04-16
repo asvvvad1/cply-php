@@ -40,7 +40,7 @@ if ($climate->arguments->defined('help')) {
 if (!$climate->arguments->defined('song')) {
 	$input = $climate->input('Song/artist name: ');
 	$song = trim($input->prompt());
-} elseif (trim($climate->arguments->get('song')) == '') {
+} elseif ($climate->arguments->get('song') == '') {
 	$climate->error("Specify a song name using the argument -s");
 	exit(1);
 } else {
@@ -73,13 +73,15 @@ if (empty($hits)) {
 $search = [];
 
 foreach ($hits as $hit) {
+	// full-length title
+	$title = $hit->result->full_title;
 	// substr because some titles are too long and that can cause errors in song selection
-	$search[substr($hit->result->full_title, 0, 40)] = $hit->result->path;
+	$search[substr($title, 0, 40)] = ["path" => $hit->result->path, "title" => $title];
 }
 
 $input = $climate->radio('Select a song:', array_keys($search));
 $input = $input->prompt();
-$path = $search[$input];
+$path = $search[$input]["path"];
 
 
 $completeurl = "https://genius.com$path";
@@ -90,7 +92,7 @@ $xpath = new DOMXPath($doc);
 $query = "//div[@class='lyrics']";
 $entries = $xpath->query($query);
 $var = $entries->item(0)->textContent;
-$lyrics = trim($var);
+$lyrics = $search[$input]["title"]."\n".trim($var)."\n";
 
 
 $c = new Clipboard();
@@ -98,16 +100,16 @@ $c = new Clipboard();
 if ($c->isUnsupported() === false) {
 	$c->writeAll($lyrics);
 	if ($c->readAll() != $lyrics) {
-		$climate->info("Lyrics for $input were copied to the clipboard.");
+		$climate->info("Lyrics for ".$search[$input]["title"]." were copied to the clipboard.");
 		exit;
 	}
 	else {
 		$climate->error("Lyrics weren't copied to clipboard; copy them from here:\n");
-		$climate->info("$lyrics\n");
+		$climate->info($lyrics);
 		exit(1);
 	}
 } else {
 	$climate->error("Unsupported. Lyrics weren't copied to clipboard; copy them from here:\n");
-	$climate->info("$lyrics\n");
+	$climate->info($Lyrics);
 	exit(1);
-}.
+}
