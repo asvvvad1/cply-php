@@ -15,7 +15,7 @@ git clone https://github.com/asvvvad/cply-php
 cd cply-php
 composer install
 ```
-After that, edit [cply](cply#L12-14) with the keys at the begining of the file
+After that, edit [cply](cply#L12-L14) with the keys at the begining of the file
 
 Now you can run it using `./cply`
 
