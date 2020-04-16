@@ -31,6 +31,8 @@ $climate->arguments->add([
 
 $climate->description('CPLY: Get lyrics copied to your clipboard. (https://github.com/asvvvad/cply)');
 
+$climate->arguments->parse();
+
 if ($climate->arguments->defined('help')) {
 	$climate->usage();
 	exit;
