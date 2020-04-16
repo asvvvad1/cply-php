@@ -1,0 +1,20 @@
+{
+	"name": "asvvvad/cply-php",
+	"description": "Search lyrics and copy them automatically from the terminal",
+	"type": "program",
+	"require": {
+		"php": ">=7.0.0",
+        "simivar/genius-php": "^2.0",
+        "php-http/message": "^1.8",
+        "php-http/guzzle6-adapter": "^2.0",
+        "asvvvad/dollaapp-clipboard-php": "dev-master",
+        "league/climate": "^3.5"
+	},
+	"license": "GPL-3.0",
+	"authors": [
+		{
+			"name": "asvvvad",
+			"email": "asvvvad@disroot.org"
+		}
+	]
+}
