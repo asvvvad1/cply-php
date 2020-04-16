@@ -3,6 +3,9 @@
 Search lyrics and copy them automatically from the terminal
 
 ## Requirements
+
+UNIX-only: Linux, BSD, MacOS
+
 This version is written in PHP and it requires PHP and Composer and a unix system, the song selector of [Climax](https://github.com/tucnak/climax) only works on Unix systems. Tested on Ubuntu (elementaryOS) but should work on others aswell.
 
 It uses my [php clipboard helper](https://github.com/asvvvad/dollaapp-clipboard-php/) which requires `xclip` or `xsel` on Linux and `pbcopy` and `pbpaste` on Darwin
