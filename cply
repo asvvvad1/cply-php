@@ -29,7 +29,7 @@ $climate->arguments->add([
     ]
 ]);
 
-$climate->description('CPLY: Get lyrics copied to your clipboard. (https://github.com/asvvvad/cply)');
+$climate->description('CPLY: Get lyrics copied to your clipboard. (https://github.com/asvvvad/cply-php)');
 
 $climate->arguments->parse();
 
